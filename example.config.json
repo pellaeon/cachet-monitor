@@ -12,5 +12,6 @@
       "strict_tls": true
     }
   ],
-  "insecure_api": false
+  "insecure_api": false,
+  "check_interval": 2,
 }

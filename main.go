@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/castawaylabs/cachet-monitor/cachet"
+	"github.com/pellaeon/cachet-monitor/cachet"
 	"time"
 )
 
@@ -20,7 +20,7 @@ func main() {
 
 	log.Println()
 
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(time.Second * time.Duration(config.CheckInterval))
 	for range ticker.C {
 		for _, mon := range config.Monitors {
 			go mon.Run()

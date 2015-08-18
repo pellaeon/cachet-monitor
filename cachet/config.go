@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/castawaylabs/cachet-monitor/system"
+	"github.com/pellaeon/cachet-monitor/system"
 	"io"
 	"io/ioutil"
 	"log"
@@ -21,12 +21,13 @@ var Logger *log.Logger
 
 // CachetConfig is the monitoring tool configuration
 type CachetConfig struct {
-	APIUrl      string     `json:"api_url"`
-	APIToken    string     `json:"api_token"`
-	Monitors    []*Monitor `json:"monitors"`
-	SystemName  string     `json:"system_name"`
-	LogPath     string     `json:"log_path"`
-	InsecureAPI bool       `json:"insecure_api"`
+	APIUrl        string     `json:"api_url"`
+	APIToken      string     `json:"api_token"`
+	Monitors      []*Monitor `json:"monitors"`
+	SystemName    string     `json:"system_name"`
+	LogPath       string     `json:"log_path"`
+	InsecureAPI   bool       `json:"insecure_api"`
+	CheckInterval uint       `json:"check_interval"`
 }
 
 func init() {
@@ -87,6 +88,10 @@ func init() {
 	if len(Config.APIToken) == 0 || len(Config.APIUrl) == 0 {
 		fmt.Printf("API URL or API Token not set. cachet-monitor won't be able to report incidents.\n\nPlease set:\n CACHET_API and CACHET_TOKEN environment variable to override settings.\n\nGet help at https://github.com/CastawayLabs/cachet-monitor\n")
 		os.Exit(1)
+	}
+
+	if Config.CheckInterval == 0 {
+		Config.CheckInterval = 2
 	}
 
 	if len(Config.Monitors) == 0 {
