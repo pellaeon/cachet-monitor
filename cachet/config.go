@@ -19,15 +19,21 @@ var Config CachetConfig
 // Central logger
 var Logger *log.Logger
 
+type MonitorConfig struct {
+	Type      string
+	Parameter interface{}
+	Expect    interface{}
+}
+
 // CachetConfig is the monitoring tool configuration
 type CachetConfig struct {
-	APIUrl        string     `json:"api_url"`
-	APIToken      string     `json:"api_token"`
-	Monitors      []*Monitor `json:"monitors"`
-	SystemName    string     `json:"system_name"`
-	LogPath       string     `json:"log_path"`
-	InsecureAPI   bool       `json:"insecure_api"`
-	CheckInterval uint       `json:"check_interval"`
+	APIUrl         string          `json:"api_url"`
+	APIToken       string          `json:"api_token"`
+	MonitorConfigs []MonitorConfig `json:"monitors"`
+	SystemName     string          `json:"system_name"`
+	LogPath        string          `json:"log_path"`
+	InsecureAPI    bool            `json:"insecure_api"`
+	CheckInterval  uint            `json:"check_interval"`
 }
 
 func init() {
@@ -94,7 +100,7 @@ func init() {
 		Config.CheckInterval = 2
 	}
 
-	if len(Config.Monitors) == 0 {
+	if len(Config.MonitorConfigs) == 0 {
 		fmt.Printf("No monitors defined!\nSee sample configuration: https://github.com/CastawayLabs/cachet-monitor/blob/master/example.config.json\n")
 		os.Exit(1)
 	}
