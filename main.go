@@ -10,20 +10,20 @@ func main() {
 	log := cachet.Logger
 
 	log.Printf("System: %s, API: %s\n", config.SystemName, config.APIUrl)
-	log.Printf("Starting %d monitors:\n", len(config.Monitors))
-	/*for _, mon := range config.Monitors {
-		log.Printf(" %s: GET %s & Expect HTTP %d\n", mon.Name, mon.URL, mon.ExpectedStatusCode)
-		if mon.MetricID > 0 {
-			log.Printf(" - Logs lag to metric id: %d\n", mon.MetricID)
-		}
-	}*/
+	log.Printf("Starting %d monitors:\n", len(config.MonitorConfigs))
+
+	// initialize monitors
+	var allMonitors []*Monitor
+	for _, monconf := range config.MonitorConfigs {
+		allMonitors = append(allMonitors, NewMonitor(&monconf))
+	}
 
 	log.Println()
 
 	ticker := time.NewTicker(time.Second * time.Duration(config.CheckInterval))
 	for range ticker.C {
-		for _, monconf := range config.MonitorConfigs {
-			go Check(monconf.Type, monconf.Parameter, monconf.Expect)
+		for _, m := range allMonitors {
+			go m.Check()
 		}
 	}
 }
