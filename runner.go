@@ -8,7 +8,6 @@ import (
 )
 
 type Monitor struct {
-	mc             *cachet.MonitorConfig
 	History        []bool
 	LastFailReason string
 	Incident       *cachet.Incident
@@ -19,7 +18,7 @@ type Monitor struct {
 	ComponentID    uint
 }
 
-func NewMonitor(config *cachet.MonitorConfig) *Monitor {
+func NewMonitor(config *map[string]interface{}) *Monitor {
 	var checker Checker
 	/*
 		switch config.Type {
@@ -33,7 +32,6 @@ func NewMonitor(config *cachet.MonitorConfig) *Monitor {
 		StrictTLS:          false,
 	}
 	return &Monitor{
-		mc:      config,
 		Checker: checker,
 	}
 }

@@ -19,21 +19,15 @@ var Config CachetConfig
 // Central logger
 var Logger *log.Logger
 
-type MonitorConfig struct {
-	Type      string
-	Parameter interface{}
-	Expect    interface{}
-}
-
 // CachetConfig is the monitoring tool configuration
 type CachetConfig struct {
-	APIUrl         string          `json:"api_url"`
-	APIToken       string          `json:"api_token"`
-	MonitorConfigs []MonitorConfig `json:"monitors"`
-	SystemName     string          `json:"system_name"`
-	LogPath        string          `json:"log_path"`
-	InsecureAPI    bool            `json:"insecure_api"`
-	CheckInterval  uint            `json:"check_interval"`
+	APIUrl         string                   `json:"api_url"`
+	APIToken       string                   `json:"api_token"`
+	MonitorConfigs []map[string]interface{} `json:"monitors"`
+	SystemName     string                   `json:"system_name"`
+	LogPath        string                   `json:"log_path"`
+	InsecureAPI    bool                     `json:"insecure_api"`
+	CheckInterval  uint                     `json:"check_interval"`
 }
 
 func init() {
@@ -73,6 +67,7 @@ func init() {
 
 	if err != nil {
 		fmt.Println("Cannot parse config!")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
