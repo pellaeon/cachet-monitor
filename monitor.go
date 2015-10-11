@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/pellaeon/cachet-monitor/cachet"
 	"github.com/pellaeon/cachet-monitor/monitors"
 	"github.com/pellaeon/cachet-monitor/system"
@@ -18,7 +19,17 @@ type Monitor struct {
 	ComponentID    uint
 }
 
-func NewMonitor(config *map[string]interface{}) *Monitor {
+func NewMonitor(configp *map[string]interface{}) (error, *Monitor) {
+	config := *configp
+	if config["name"] == nil {
+		return errors.New("Monitor \"name\" no set"), nil
+	}
+	if config["type"] == nil {
+		return errors.New("Monitor \"type\" no set"), nil
+	}
+	if config["parameters"] == nil {
+		return errors.New("Monitor \"parameters\" no set"), nil
+	}
 	var checker Checker
 	/*
 		switch config.Type {
@@ -31,7 +42,7 @@ func NewMonitor(config *map[string]interface{}) *Monitor {
 		ExpectedStatusCode: 200,
 		StrictTLS:          false,
 	}
-	return &Monitor{
+	return nil, &Monitor{
 		Checker: checker,
 	}
 }

@@ -16,7 +16,12 @@ func main() {
 	var allMonitors []*Monitor
 	for _, monconf := range config.MonitorConfigs {
 		log.Println(monconf["type"]) //debug
-		allMonitors = append(allMonitors, NewMonitor(&monconf))
+		err, mon := NewMonitor(&monconf)
+		if err == nil {
+			allMonitors = append(allMonitors, mon)
+		} else {
+			log.Printf("Parsing monitor error, skipping: %v", err)
+		}
 	}
 
 	/*
