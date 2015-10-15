@@ -2,6 +2,7 @@ package monitors
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -14,12 +15,20 @@ type HTTPChecker struct {
 	URL                string `json:"url"`
 	ExpectedStatusCode int    `json:"expected_status_code"`
 	StrictTLS          bool   `json:"strict_tls"`
+	Parameters         struct {
+		URL        string
+		Strict_tls bool
+	}
+	Expect struct {
+		Status_code uint
+	}
 }
 
 //func (HTTPChecker *HTTPChecker) New(parameter, expect interface{}) *Checker {
 
 // Run loop
 func (HTTPChecker *HTTPChecker) Check() (bool, uint, string) {
+	fmt.Println("HTTP.Parameters.URL= " + HTTPChecker.Parameters.URL)
 	reqStart := getMs()
 	isUp, reason := HTTPChecker.doRequest()
 	lag := getMs() - reqStart
@@ -30,6 +39,9 @@ func (HTTPChecker *HTTPChecker) Check() (bool, uint, string) {
 	}*/
 
 	return isUp, uint(lag), reason
+}
+func (HTTPChecker *HTTPChecker) Test() string {
+	return HTTPChecker.Parameters.URL
 }
 
 func (HTTPChecker *HTTPChecker) doRequest() (bool, string) {

@@ -17,39 +17,43 @@ type Monitor struct {
 	Threshold      float32 `json:"threshold"`
 	Name           string  `json:"name"`
 	ComponentID    uint
+	Type           string
+	Parameters     json.RawMessage
+	Expect         json.RawMessage
 }
 
-func NewMonitor(configp *map[string]interface{}) (error, *Monitor) {
-	config := *configp
-	if config["name"] == nil {
+func NewMonitor(monconfp *json.RawMessage) (error, *Monitor) {
+	var m Monitor
+	json.Unmarshal(*monconfp, &m)
+
+	if m.Name == "" {
 		return errors.New("Monitor \"name\" no set"), nil
 	}
-	if config["type"] == nil {
-		return errors.New("Monitor \"type\" no set"), nil
-	}
-	if config["parameters"] == nil {
+	if m.Parameters == nil {
 		return errors.New("Monitor \"parameters\" no set"), nil
 	}
-	var checker Checker
-	/*
-		switch config.Type {
-		case "http":
-			// TODO: unmarshall
 
-		}*/
-	checker = &monitors.HTTPChecker{
-		URL:                "placeholder",
-		ExpectedStatusCode: 200,
-		StrictTLS:          false,
+	if m.Type == "" {
+		return errors.New("Monitor \"type\" no set"), nil
+	} else {
+		switch m.Type {
+		case "http":
+			var checker monitors.HTTPChecker
+			json.Unmarshal(m.Parameters, &checker.Parameters)
+			json.Unmarshal(m.Expect, &checker.Expect)
+			m.Checker = &checker
+		default:
+			return errors.New("Unknown type: " + string(m.Type)), nil
+		}
 	}
-	return nil, &Monitor{
-		Checker: checker,
-	}
+
+	return nil, &m
 }
 
 func (m *Monitor) Check() {
 	var success bool
 	var responseTime uint
+	cachet.Logger.Printf("initiate check")
 	success, responseTime, m.LastFailReason = m.Checker.Check()
 	_ = responseTime //TODO remove
 	m.historyAppend(success)

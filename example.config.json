@@ -9,8 +9,8 @@
 	  "component_id": 1,
 	  "threshold": 5,
 	  "parameters": {
-		  "host": "example.com",
-		  "port": 80
+		  "url": "http://example.com",
+		  "strict_tls": false
 	  },
 	  "expect": {
 		  "status_code": 200

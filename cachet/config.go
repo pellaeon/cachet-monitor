@@ -21,13 +21,13 @@ var Logger *log.Logger
 
 // CachetConfig is the monitoring tool configuration
 type CachetConfig struct {
-	APIUrl         string                   `json:"api_url"`
-	APIToken       string                   `json:"api_token"`
-	MonitorConfigs []map[string]interface{} `json:"monitors"`
-	SystemName     string                   `json:"system_name"`
-	LogPath        string                   `json:"log_path"`
-	InsecureAPI    bool                     `json:"insecure_api"`
-	CheckInterval  uint                     `json:"check_interval"`
+	APIUrl         string            `json:"api_url"`
+	APIToken       string            `json:"api_token"`
+	MonitorConfigs []json.RawMessage `json:"monitors"`
+	SystemName     string            `json:"system_name"`
+	LogPath        string            `json:"log_path"`
+	InsecureAPI    bool              `json:"insecure_api"`
+	CheckInterval  uint              `json:"check_interval"`
 }
 
 func init() {

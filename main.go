@@ -1,8 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/pellaeon/cachet-monitor/cachet"
-	_ "time"
+	"time"
 )
 
 func main() {
@@ -15,8 +16,8 @@ func main() {
 	// initialize monitors
 	var allMonitors []*Monitor
 	for _, monconf := range config.MonitorConfigs {
-		log.Println(monconf["type"]) //debug
 		err, mon := NewMonitor(&monconf)
+		fmt.Println(mon.Checker.Test())
 		if err == nil {
 			allMonitors = append(allMonitors, mon)
 		} else {
@@ -24,11 +25,10 @@ func main() {
 		}
 	}
 
-	/*
-		ticker := time.NewTicker(time.Second * time.Duration(config.CheckInterval))
-		for range ticker.C {
-			for _, m := range allMonitors {
-				go m.Check()
-			}
-		}*/
+	ticker := time.NewTicker(time.Second * time.Duration(config.CheckInterval))
+	for range ticker.C {
+		for _, m := range allMonitors {
+			go m.Check()
+		}
+	}
 }
