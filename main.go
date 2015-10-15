@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/pellaeon/cachet-monitor/cachet"
 	"time"
 )
@@ -17,7 +16,6 @@ func main() {
 	var allMonitors []*Monitor
 	for _, monconf := range config.MonitorConfigs {
 		err, mon := NewMonitor(&monconf)
-		fmt.Println(mon.Checker.Test())
 		if err == nil {
 			allMonitors = append(allMonitors, mon)
 		} else {

@@ -53,7 +53,6 @@ func NewMonitor(monconfp *json.RawMessage) (error, *Monitor) {
 func (m *Monitor) Check() {
 	var success bool
 	var responseTime uint
-	cachet.Logger.Printf("initiate check")
 	success, responseTime, m.LastFailReason = m.Checker.Check()
 	_ = responseTime //TODO remove
 	m.historyAppend(success)
