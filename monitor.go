@@ -6,17 +6,18 @@ import (
 	"github.com/pellaeon/cachet-monitor/cachet"
 	"github.com/pellaeon/cachet-monitor/monitors"
 	"github.com/pellaeon/cachet-monitor/system"
+	"strconv"
 )
 
 type Monitor struct {
 	History        []bool
 	LastFailReason string
 	Incident       *cachet.Incident
-	MetricID       int
+	MetricID       int `json:"metric_id"`
 	Checker        Checker
 	Threshold      float32 `json:"threshold"`
 	Name           string  `json:"name"`
-	ComponentID    uint
+	ComponentID    uint    `json:"component_id"`
 	Type           string
 	Parameters     json.RawMessage
 	Expect         json.RawMessage
@@ -81,7 +82,7 @@ func (m *Monitor) AnalyseData() {
 		// is down, create an incident
 		cachet.Logger.Println("Creating incident...")
 
-		component_id := json.Number(m.ComponentID)
+		component_id := json.Number(strconv.Itoa(int(m.ComponentID)))
 		m.Incident = &cachet.Incident{
 			Name:        m.Name + " - " + system.GetHostname(), // XXX
 			Message:     m.Name + " check failed",
@@ -102,7 +103,7 @@ func (m *Monitor) AnalyseData() {
 		// was down, created an incident, its now ok, make it resolved.
 		cachet.Logger.Println("Updating incident to resolved...")
 
-		component_id := json.Number(m.ComponentID)
+		component_id := json.Number(strconv.Itoa(int(m.ComponentID)))
 		m.Incident = &cachet.Incident{
 			Name:        m.Incident.Name,
 			Message:     m.Name + " check succeeded",
