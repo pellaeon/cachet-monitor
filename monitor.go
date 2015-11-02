@@ -55,9 +55,12 @@ func (m *Monitor) Check() {
 	var success bool
 	var responseTime uint
 	success, responseTime, m.LastFailReason = m.Checker.Check()
-	_ = responseTime //TODO remove
+
 	m.historyAppend(success)
 	m.AnalyseData()
+	if success == true && m.MetricID > 0 {
+		cachet.SendMetric(m.MetricID, responseTime)
+	}
 }
 
 // AnalyseData decides if the Monitor is statistically up or down and creates / resolves an incident

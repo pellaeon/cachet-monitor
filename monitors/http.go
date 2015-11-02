@@ -27,11 +27,6 @@ func (HTTPChecker *HTTPChecker) Check() (bool, uint, string) {
 	isUp, reason := HTTPChecker.doRequest()
 	lag := getMs() - reqStart
 
-	/* TODO
-	if isUp == true && HTTPChecker.MetricID > 0 {
-		SendMetric(HTTPChecker.MetricID, lag)
-	}*/
-
 	return isUp, uint(lag), reason
 }
 func (HTTPChecker *HTTPChecker) Test() string {
