@@ -55,6 +55,17 @@ func NewMonitor(monconfp *json.RawMessage) (error, *Monitor) {
 				fmt.Printf("%v", err)
 			}
 			m.Checker = &checker
+		case "ntp":
+			var checker monitors.NTPChecker
+			err := json.Unmarshal(m.Parameters, &checker.Parameters)
+			if err != nil {
+				fmt.Printf("%v", err)
+			}
+			err = json.Unmarshal(m.Expect, &checker.Expect)
+			if err != nil {
+				fmt.Printf("%v", err)
+			}
+			m.Checker = &checker
 		default:
 			return errors.New("Unknown type: " + string(m.Type)), nil
 		}

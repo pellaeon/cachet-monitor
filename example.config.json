@@ -31,6 +31,18 @@
 	  "expect": {
 		  "contain": "140.113.41.202"
 	  }
+    },
+    {
+      "name": "NCTU NTP",
+	  "type": "ntp",
+	  "metric_id": 3,
+	  "component_id": 3,
+	  "threshold": 5,
+	  "parameters": {
+		  "server": "140.113.54.14"
+	  },
+	  "expect": {
+	  }
     }
   ],
   "insecure_api": false,
