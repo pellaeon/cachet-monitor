@@ -2,7 +2,7 @@ package monitors
 
 import (
 	"github.com/beevik/ntp"
-	"github.com/pellaeon/cachet-monitor/cachet"
+	"github.com/tideland/golib/logger"
 )
 
 type NTPChecker struct {
@@ -18,7 +18,7 @@ func (nc *NTPChecker) Check() (bool, int64, string) {
 	_, err := ntp.Time(nc.Parameters.Server)
 	lag := getMs() - reqStart
 	if err != nil {
-		cachet.Logger.Println(err.Error())
+		logger.Warningf(err.Error())
 		return false, lag, err.Error()
 	}
 	return true, lag, ""

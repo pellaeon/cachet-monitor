@@ -2,6 +2,7 @@ package cachet
 
 import (
 	"encoding/json"
+	"github.com/tideland/golib/logger"
 	"strconv"
 )
 
@@ -32,14 +33,14 @@ type IncidentList struct {
 func GetIncidents() []Incident {
 	_, body, err := makeRequest("GET", "/incidents", nil)
 	if err != nil {
-		Logger.Printf("Cannot get incidents: %v\n", err)
+		logger.Errorf("Cannot get incidents: %v", err)
 		return []Incident{}
 	}
 
 	var data IncidentList
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		Logger.Printf("Cannot parse incidents: %v\n", err)
+		logger.Errorf("Cannot parse incidents: %v", err)
 		panic(err)
 	}
 
@@ -65,16 +66,16 @@ func (incident *Incident) Send() {
 
 	resp, body, err := makeRequest(requestType, requestURL, jsonBytes)
 	if err != nil {
-		Logger.Printf("Cannot create/update incident: %v\n", err)
+		logger.Errorf("Cannot create/update incident: %v", err)
 		return
 	}
 
-	Logger.Println(strconv.Itoa(resp.StatusCode) + " " + string(body))
+	logger.Debugf(strconv.Itoa(resp.StatusCode) + " " + string(body))
 
 	var data IncidentData
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		Logger.Println("Cannot parse incident body.", string(body))
+		logger.Errorf("Cannot parse incident body.", string(body))
 		panic(err)
 	} else {
 		incident.ID = data.Incident.ID
@@ -82,7 +83,7 @@ func (incident *Incident) Send() {
 	}
 
 	if resp.StatusCode != 200 {
-		Logger.Println("Could not create/update incident!")
+		logger.Errorf("Could not create/update incident!")
 	}
 }
 
@@ -95,7 +96,7 @@ func (incident *Incident) fetchComponent() error {
 	var data ComponentData
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		Logger.Println("Cannot parse component body. %v", string(body))
+		logger.Errorf("Cannot parse component body. %v", string(body))
 		panic(err)
 	}
 
@@ -112,7 +113,7 @@ func (incident *Incident) UpdateComponent() {
 	if incident.Component == nil {
 		// fetch component
 		if err := incident.fetchComponent(); err != nil {
-			Logger.Printf("Cannot fetch component for incident. %v\n", err)
+			logger.Errorf("Cannot fetch component for incident. %v\n", err)
 			return
 		}
 	}
@@ -135,7 +136,7 @@ func (incident *Incident) UpdateComponent() {
 
 	resp, _, err := makeRequest("PUT", "/components/"+string(incident.Component.ID), jsonBytes)
 	if err != nil || resp.StatusCode != 200 {
-		Logger.Printf("Could not update component: (resp code %d) %v", resp.StatusCode, err)
+		logger.Errorf("Could not update component: (resp code %d) %v", resp.StatusCode, err)
 		return
 	}
 }

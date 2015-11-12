@@ -2,15 +2,18 @@ package main
 
 import (
 	"github.com/pellaeon/cachet-monitor/cachet"
+	"github.com/tideland/golib/logger"
+	"os"
 	"time"
 )
 
 func main() {
 	config := cachet.Config
-	log := cachet.Logger
+	logger.SetLogger(logger.NewTimeformatLogger(os.Stderr, "2006-01-02 15:04:05"))
+	logger.SetLevel(logger.LevelDebug)
 
-	log.Printf("System: %s, API: %s\n", config.SystemName, config.APIUrl)
-	log.Printf("Starting %d monitors:\n", len(config.MonitorConfigs))
+	logger.Infof("System: %s, API: %s", config.SystemName, config.APIUrl)
+	logger.Infof("Starting %d monitors", len(config.MonitorConfigs))
 
 	// initialize monitors
 	var allMonitors []*Monitor
@@ -19,7 +22,7 @@ func main() {
 		if err == nil {
 			allMonitors = append(allMonitors, mon)
 		} else {
-			log.Printf("Parsing monitor error, skipping: %v", err)
+			logger.Errorf("Parsing monitor error, skipping: %v", err)
 		}
 	}
 

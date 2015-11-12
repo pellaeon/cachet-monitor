@@ -1,8 +1,8 @@
 package monitors
 
 import (
-	"fmt"
 	"github.com/miekg/dns"
+	"github.com/tideland/golib/logger"
 	"math"
 )
 
@@ -26,12 +26,12 @@ func (dc *DNSChecker) Check() (bool, int64, string) {
 	case "MX":
 		m.SetQuestion(dc.Parameters.Query, dns.TypeMX)
 	default:
-		fmt.Println("DNSChecker: unknown query type")
-		return false, -1, "DNSChecker: unknown query type"
+		logger.Warningf("DNSChecker: unsupported query type")
+		return false, -1, "DNSChecker: unsupported query type"
 	}
 	res, rtt, err := c.Exchange(m, dc.Parameters.Server+":53")
 	if err != nil {
-		fmt.Printf("DNSChecker: %v\n", err)
+		logger.Warningf("DNSChecker: %v", err)
 		return false, -1, err.Error()
 	}
 	var isUp bool

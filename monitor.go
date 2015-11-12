@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/pellaeon/cachet-monitor/cachet"
 	"github.com/pellaeon/cachet-monitor/monitors"
 	"github.com/pellaeon/cachet-monitor/system"
+	"github.com/tideland/golib/logger"
 	"strconv"
 )
 
@@ -48,22 +48,22 @@ func NewMonitor(monconfp *json.RawMessage) (error, *Monitor) {
 			var checker monitors.DNSChecker
 			err := json.Unmarshal(m.Parameters, &checker.Parameters)
 			if err != nil {
-				fmt.Printf("%v", err)
+				logger.Errorf("Unmarshal: %v", err)
 			}
 			err = json.Unmarshal(m.Expect, &checker.Expect)
 			if err != nil {
-				fmt.Printf("%v", err)
+				logger.Errorf("Unmarshal: %v", err)
 			}
 			m.Checker = &checker
 		case "ntp":
 			var checker monitors.NTPChecker
 			err := json.Unmarshal(m.Parameters, &checker.Parameters)
 			if err != nil {
-				fmt.Printf("%v", err)
+				logger.Errorf("Unmarshal: %v", err)
 			}
 			err = json.Unmarshal(m.Expect, &checker.Expect)
 			if err != nil {
-				fmt.Printf("%v", err)
+				logger.Errorf("Unmarshal: %v", err)
 			}
 			m.Checker = &checker
 		default:
@@ -106,7 +106,7 @@ func (m *Monitor) AnalyseData() {
 
 	if t > m.Threshold && m.Incident == nil {
 		// is down, create an incident
-		cachet.Logger.Println("Creating incident...")
+		logger.Infof("Creating incident...")
 
 		component_id := json.Number(strconv.Itoa(int(m.ComponentID)))
 		m.Incident = &cachet.Incident{
@@ -127,7 +127,7 @@ func (m *Monitor) AnalyseData() {
 		m.Incident.UpdateComponent()
 	} else if t < m.Threshold && m.Incident != nil {
 		// was down, created an incident, its now ok, make it resolved.
-		cachet.Logger.Println("Updating incident to resolved...")
+		logger.Infof("Updating incident to resolved...")
 
 		component_id := json.Number(strconv.Itoa(int(m.ComponentID)))
 		m.Incident = &cachet.Incident{

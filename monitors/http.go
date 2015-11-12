@@ -3,7 +3,7 @@ package monitors
 import (
 	"bytes"
 	"crypto/tls"
-	"github.com/pellaeon/cachet-monitor/cachet"
+	"github.com/tideland/golib/logger"
 	"net/http"
 	"strconv"
 	"strings"
@@ -57,18 +57,18 @@ func (HTTPChecker *HTTPChecker) doRequest() (bool, string) {
 		reason := "Unexpected response code: " + strconv.Itoa(resp.StatusCode) + ". Expected " + strconv.Itoa(HTTPChecker.Expect.Status_code)
 		return false, reason
 	}
-	cachet.Logger.Printf("%d", resp.StatusCode)
+	logger.Debugf("%d", resp.StatusCode)
 
 	if HTTPChecker.Expect.Contain_keyword != "" {
 		bodybuf := new(bytes.Buffer)
 		_, err := bodybuf.ReadFrom(resp.Body)
 		body_s := bodybuf.String()
 		if err != nil {
-			cachet.Logger.Println("HTTPChecker: " + err.Error())
+			logger.Warningf("HTTPChecker: " + err.Error())
 			return false, "HTTPChecker: " + err.Error()
 		}
 		if !strings.Contains(body_s, HTTPChecker.Expect.Contain_keyword) {
-			cachet.Logger.Println("Response does not contain keyword: " + HTTPChecker.Expect.Contain_keyword)
+			logger.Infof("Response does not contain keyword: " + HTTPChecker.Expect.Contain_keyword)
 			return false, "Response does not contain keyword: " + HTTPChecker.Expect.Contain_keyword
 		}
 	}
