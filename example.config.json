@@ -14,7 +14,7 @@
 	  },
 	  "expect": {
 		  "status_code": 200,
-		"keyword": "test"
+		  "contain_keyword": "test"
 	  }
     },
     {

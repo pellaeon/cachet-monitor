@@ -1,10 +1,12 @@
 package monitors
 
 import (
+	"bytes"
 	"crypto/tls"
 	"github.com/pellaeon/cachet-monitor/cachet"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,7 +19,8 @@ type HTTPChecker struct {
 		Strict_tls bool
 	}
 	Expect struct {
-		Status_code int
+		Status_code     int
+		Contain_keyword string
 	}
 }
 
@@ -55,6 +58,20 @@ func (HTTPChecker *HTTPChecker) doRequest() (bool, string) {
 		return false, reason
 	}
 	cachet.Logger.Printf("%d", resp.StatusCode)
+
+	if HTTPChecker.Expect.Contain_keyword != "" {
+		bodybuf := new(bytes.Buffer)
+		_, err := bodybuf.ReadFrom(resp.Body)
+		body_s := bodybuf.String()
+		if err != nil {
+			cachet.Logger.Println("HTTPChecker: " + err.Error())
+			return false, "HTTPChecker: " + err.Error()
+		}
+		if !strings.Contains(body_s, HTTPChecker.Expect.Contain_keyword) {
+			cachet.Logger.Println("Response does not contain keyword: " + HTTPChecker.Expect.Contain_keyword)
+			return false, "Response does not contain keyword: " + HTTPChecker.Expect.Contain_keyword
+		}
+	}
 
 	return true, ""
 }
