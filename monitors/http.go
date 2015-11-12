@@ -22,12 +22,12 @@ type HTTPChecker struct {
 }
 
 // Run loop
-func (HTTPChecker *HTTPChecker) Check() (bool, uint, string) {
+func (HTTPChecker *HTTPChecker) Check() (bool, int64, string) {
 	reqStart := getMs()
 	isUp, reason := HTTPChecker.doRequest()
 	lag := getMs() - reqStart
 
-	return isUp, uint(lag), reason
+	return isUp, lag, reason
 }
 func (HTTPChecker *HTTPChecker) Test() string {
 	return HTTPChecker.Parameters.URL

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/pellaeon/cachet-monitor/cachet"
 	"github.com/pellaeon/cachet-monitor/monitors"
 	"github.com/pellaeon/cachet-monitor/system"
@@ -43,6 +44,17 @@ func NewMonitor(monconfp *json.RawMessage) (error, *Monitor) {
 			json.Unmarshal(m.Parameters, &checker.Parameters)
 			json.Unmarshal(m.Expect, &checker.Expect)
 			m.Checker = &checker
+		case "dns":
+			var checker monitors.DNSChecker
+			err := json.Unmarshal(m.Parameters, &checker.Parameters)
+			if err != nil {
+				fmt.Printf("%v", err)
+			}
+			err = json.Unmarshal(m.Expect, &checker.Expect)
+			if err != nil {
+				fmt.Printf("%v", err)
+			}
+			m.Checker = &checker
 		default:
 			return errors.New("Unknown type: " + string(m.Type)), nil
 		}
@@ -53,7 +65,7 @@ func NewMonitor(monconfp *json.RawMessage) (error, *Monitor) {
 
 func (m *Monitor) Check() {
 	var success bool
-	var responseTime uint
+	var responseTime int64
 	success, responseTime, m.LastFailReason = m.Checker.Check()
 
 	m.historyAppend(success)

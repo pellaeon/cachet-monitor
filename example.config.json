@@ -13,7 +13,23 @@
 		  "strict_tls": false
 	  },
 	  "expect": {
-		  "status_code": 200
+		  "status_code": 200,
+		"keyword": "test"
+	  }
+    },
+    {
+      "name": "NCTU DNS",
+	  "type": "dns",
+	  "metric_id": 2,
+	  "component_id": 2,
+	  "threshold": 5,
+	  "parameters": {
+		  "rr_type": "A",
+		  "query": "www.nctu.edu.tw.",
+		  "server": "140.113.1.1"
+	  },
+	  "expect": {
+		  "contain": "140.113.41.202"
 	  }
     }
   ],
