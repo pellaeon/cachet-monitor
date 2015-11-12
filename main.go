@@ -9,6 +9,7 @@ import (
 
 func main() {
 	config := cachet.Config
+	// TODO support log path
 	logger.SetLogger(logger.NewTimeformatLogger(os.Stderr, "2006-01-02 15:04:05"))
 	logger.SetLevel(logger.LevelDebug)
 
