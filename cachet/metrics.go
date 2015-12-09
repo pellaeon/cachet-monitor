@@ -18,7 +18,7 @@ func SendMetric(metricID int, delay int64) {
 
 	resp, _, err := makeRequest("POST", "/metrics/"+strconv.Itoa(metricID)+"/points", jsonBytes)
 	if err != nil || resp.StatusCode != 200 {
-		logger.Errorf("Could not log data point!\n%v\n", err)
+		logger.Errorf("Could not log data point: %v", err)
 		return
 	}
 }
