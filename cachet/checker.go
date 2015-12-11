@@ -1,4 +1,4 @@
-package main
+package cachet
 
 type Checker interface {
 	//New(Parameter, Expect interface{}) Checker

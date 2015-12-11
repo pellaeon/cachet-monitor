@@ -17,10 +17,14 @@ func main() {
 	logger.Infof("Starting %d monitors", len(config.MonitorConfigs))
 
 	// initialize monitors
-	var allMonitors []*Monitor
+	var allMonitors []*cachet.Monitor
 	for _, monconf := range config.MonitorConfigs {
-		err, mon := NewMonitor(&monconf)
+		err, mon := cachet.NewMonitor(&monconf)
 		if err == nil {
+			err = cachet.SyncMonitor(mon)
+			if err != nil {
+				logger.Errorf("%v", err)
+			}
 			allMonitors = append(allMonitors, mon)
 		} else {
 			logger.Errorf("Parsing monitor error, skipping: %v", err)

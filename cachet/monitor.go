@@ -1,18 +1,18 @@
-package main
+package cachet
 
 import (
 	"encoding/json"
 	"errors"
-	"github.com/pellaeon/cachet-monitor/cachet"
 	"github.com/pellaeon/cachet-monitor/monitors"
 	"github.com/tideland/golib/logger"
 	"strconv"
 )
 
 type Monitor struct {
+	Status         string
 	History        []bool
 	LastFailReason string
-	Incident       *cachet.Incident
+	Incident       *Incident
 	MetricID       int `json:"metric_id"`
 	Checker        Checker
 	Threshold      float32 `json:"threshold"`
@@ -100,22 +100,26 @@ func (m *Monitor) AnalyseData() {
 		return
 	}
 
-	if t > m.Threshold && m.Incident == nil {
+	if t > m.Threshold {
 		// is down, create an incident
 		logger.Infof("Monitor %d is down...", m.ComponentID)
-		resp, _, err := cachet.MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"D\"}"))
+		resp, _, err := MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"D\"}"))
 		if err != nil || resp.StatusCode != 200 {
 			logger.Errorf("Could not set monitor down: (resp code %d) %v", resp.StatusCode, err)
 		}
 
+		m.Status = "D"
+
 		// TODO create Incident
-	} else if t < m.Threshold && m.Incident != nil {
+	} else if t < m.Threshold && m.Status != "U" {
 		// was down, created an incident, its now ok, make it resolved.
 		logger.Infof("Monitor %d is up...", m.ComponentID)
-		resp, _, err := cachet.MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"U\"}"))
+		resp, _, err := MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"U\"}"))
 		if err != nil || resp.StatusCode != 200 {
 			logger.Errorf("Could not set monitor up: (resp code %d) %v", resp.StatusCode, err)
 		}
+
+		m.Status = "U"
 		// TODO create Incident
 	}
 }
