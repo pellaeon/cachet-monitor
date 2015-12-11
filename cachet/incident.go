@@ -31,7 +31,7 @@ type IncidentList struct {
 
 // GetIncidents - Get list of incidents
 func GetIncidents() []Incident {
-	_, body, err := makeRequest("GET", "/incidents", nil)
+	_, body, err := MakeRequest("GET", "/incidents", nil)
 	if err != nil {
 		logger.Errorf("Cannot get incidents: %v", err)
 		return []Incident{}
@@ -64,7 +64,7 @@ func (incident *Incident) Send() {
 		requestURL += "/" + string(incident.ID)
 	}
 
-	resp, body, err := makeRequest(requestType, requestURL, jsonBytes)
+	resp, body, err := MakeRequest(requestType, requestURL, jsonBytes)
 	if err != nil {
 		logger.Errorf("Cannot create/update incident: %v", err)
 		return
@@ -88,7 +88,7 @@ func (incident *Incident) Send() {
 }
 
 func (incident *Incident) fetchComponent() error {
-	_, body, err := makeRequest("GET", "/components/"+string(*incident.ComponentID), nil)
+	_, body, err := MakeRequest("GET", "/components/"+string(*incident.ComponentID), nil)
 	if err != nil {
 		return err
 	}
@@ -134,7 +134,7 @@ func (incident *Incident) UpdateComponent() {
 		"status": incident.Component.Status,
 	})
 
-	resp, _, err := makeRequest("PUT", "/components/"+string(incident.Component.ID), jsonBytes)
+	resp, _, err := MakeRequest("PUT", "/components/"+string(incident.Component.ID), jsonBytes)
 	if err != nil || resp.StatusCode != 200 {
 		logger.Errorf("Could not update component: (resp code %d) %v", resp.StatusCode, err)
 		return

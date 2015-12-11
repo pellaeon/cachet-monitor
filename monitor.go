@@ -106,41 +106,21 @@ func (m *Monitor) AnalyseData() {
 
 	if t > m.Threshold && m.Incident == nil {
 		// is down, create an incident
-		logger.Infof("Creating incident...")
-
-		component_id := json.Number(strconv.Itoa(int(m.ComponentID)))
-		m.Incident = &cachet.Incident{
-			Name:        m.Name + " - " + system.GetHostname(), // XXX
-			Message:     m.Name + " check failed",
-			ComponentID: &component_id,
+		logger.Infof("Monitor %d is down...", m.ComponentID)
+		resp, _, err := cachet.MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"D\"}"))
+		if err != nil || resp.StatusCode != 200 {
+			logger.Errorf("Could not set monitor down: (resp code %d) %v", resp.StatusCode, err)
 		}
 
-		if m.LastFailReason != "" {
-			m.Incident.Message += "\n\n - " + m.LastFailReason
-		}
-
-		// set investigating status
-		m.Incident.SetInvestigating()
-
-		// create/update incident
-		m.Incident.Send()
-		m.Incident.UpdateComponent()
+		// TODO create Incident
 	} else if t < m.Threshold && m.Incident != nil {
 		// was down, created an incident, its now ok, make it resolved.
-		logger.Infof("Updating incident to resolved...")
-
-		component_id := json.Number(strconv.Itoa(int(m.ComponentID)))
-		m.Incident = &cachet.Incident{
-			Name:        m.Incident.Name,
-			Message:     m.Name + " check succeeded",
-			ComponentID: &component_id,
+		logger.Infof("Monitor %d is up...", m.ComponentID)
+		resp, _, err := cachet.MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"U\"}"))
+		if err != nil || resp.StatusCode != 200 {
+			logger.Errorf("Could not set monitor up: (resp code %d) %v", resp.StatusCode, err)
 		}
-
-		m.Incident.SetFixed()
-		m.Incident.Send()
-		m.Incident.UpdateComponent()
-
-		m.Incident = nil
+		// TODO create Incident
 	}
 }
 
