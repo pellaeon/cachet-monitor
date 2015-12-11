@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/pellaeon/cachet-monitor/cachet"
 	"github.com/pellaeon/cachet-monitor/monitors"
-	"github.com/pellaeon/cachet-monitor/system"
 	"github.com/tideland/golib/logger"
 	"strconv"
 )
@@ -76,14 +75,11 @@ func NewMonitor(monconfp *json.RawMessage) (error, *Monitor) {
 
 func (m *Monitor) Check() {
 	var success bool
-	var responseTime int64
-	success, responseTime, m.LastFailReason = m.Checker.Check()
+	success, _, m.LastFailReason = m.Checker.Check()
 
 	m.historyAppend(success)
 	m.AnalyseData()
-	if success == true && m.MetricID > 0 {
-		cachet.SendMetric(m.MetricID, responseTime)
-	}
+	// TODO metric
 }
 
 // AnalyseData decides if the Monitor is statistically up or down and creates / resolves an incident
