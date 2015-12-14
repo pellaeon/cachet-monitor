@@ -40,8 +40,14 @@ func NewMonitor(monconfp *json.RawMessage) (error, *Monitor) {
 		switch m.Type {
 		case "http":
 			var checker monitors.HTTPChecker
-			json.Unmarshal(m.Parameters, &checker.Parameters)
-			json.Unmarshal(m.Expect, &checker.Expect)
+			err := json.Unmarshal(m.Parameters, &checker.Parameters)
+			if err != nil {
+				logger.Errorf("Unmarshal: %v", err)
+			}
+			err = json.Unmarshal(m.Expect, &checker.Expect)
+			if err != nil {
+				logger.Errorf("Unmarshal: %v", err)
+			}
 			m.Checker = &checker
 		case "dns":
 			var checker monitors.DNSChecker
