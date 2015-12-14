@@ -106,7 +106,7 @@ func (m *Monitor) AnalyseData() {
 		return
 	}
 
-	if t > m.Threshold {
+	if t > m.Threshold && m.Status != "D" {
 		// is down, create an incident
 		logger.Infof("Monitor %d is down...", m.ComponentID)
 		resp, _, err := MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"D\"}"))
