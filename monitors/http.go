@@ -60,6 +60,7 @@ func (HTTPChecker *HTTPChecker) doRequest() error {
 
 	var err error
 	var resp *http.Response
+	var req *http.Request
 	if HTTPChecker.Parameters.URL != "" {
 		resp, err = client.Get(HTTPChecker.Parameters.URL)
 	} else {
@@ -73,7 +74,7 @@ func (HTTPChecker *HTTPChecker) doRequest() error {
 		if HTTPChecker.Parameters.Port > 65535 || HTTPChecker.Parameters.Port < 1 {
 			return fmt.Errorf("Port must be 1-65535")
 		}
-		req, err := http.NewRequest("GET", HTTPChecker.Parameters.Scheme+"://"+HTTPChecker.Parameters.IP+":"+
+		req, err = http.NewRequest("GET", HTTPChecker.Parameters.Scheme+"://"+HTTPChecker.Parameters.IP+":"+
 			strconv.Itoa(int(HTTPChecker.Parameters.Port))+HTTPChecker.Parameters.Path, nil)
 		if err != nil {
 			return err
@@ -82,11 +83,13 @@ func (HTTPChecker *HTTPChecker) doRequest() error {
 		resp, err = client.Do(req)
 	}
 
+	if resp != nil {
+		defer resp.Body.Close()
+	}
+
 	if err != nil {
 		return err
 	}
-
-	defer resp.Body.Close()
 
 	if resp.StatusCode != HTTPChecker.Expect.Status_code {
 		reason := "Unexpected response code: " + strconv.Itoa(resp.StatusCode) + ". Expected " + strconv.Itoa(HTTPChecker.Expect.Status_code)
