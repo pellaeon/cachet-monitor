@@ -45,9 +45,9 @@ func init() {
 	url, err := url.ParseRequestURI(configPath)
 	if err == nil && len(url.Scheme) > 0 {
 		// download config
-		response, err := http.Get(configPath)
-		if err != nil {
-			fmt.Printf("Cannot download network config: %v\n", err)
+		response, err1 := http.Get(configPath)
+		if err1 != nil {
+			fmt.Printf("Cannot download network config: %v\n", err1)
 			os.Exit(1)
 		}
 
