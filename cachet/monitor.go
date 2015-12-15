@@ -108,7 +108,7 @@ func (m *Monitor) AnalyseData() {
 
 	if t > m.Threshold && m.Status != "D" {
 		// is down, create an incident
-		logger.Infof("Monitor %d is down...", m.ComponentID)
+		logger.Infof("Monitor %s is down...", m.Name)
 		resp, _, err := MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"D\"}"))
 		if err != nil || resp.StatusCode != 200 {
 			logger.Errorf("Could not set monitor down: (resp code %d) %v", resp.StatusCode, err)
@@ -119,7 +119,7 @@ func (m *Monitor) AnalyseData() {
 		// TODO create Incident
 	} else if t < m.Threshold && m.Status != "U" {
 		// was down, created an incident, its now ok, make it resolved.
-		logger.Infof("Monitor %d is up...", m.ComponentID)
+		logger.Infof("Monitor %s is up...", m.Name)
 		resp, _, err := MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"U\"}"))
 		if err != nil || resp.StatusCode != 200 {
 			logger.Errorf("Could not set monitor up: (resp code %d) %v", resp.StatusCode, err)
