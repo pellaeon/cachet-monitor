@@ -1,11 +1,16 @@
 package cachet
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/pellaeon/cachet-monitor/monitors"
 	"github.com/tideland/golib/logger"
+	"net/smtp"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type Monitor struct {
@@ -112,6 +117,33 @@ func (m *Monitor) AnalyseData() {
 		resp, _, err := MakeRequest("PATCH", "/api/monitors/"+strconv.Itoa(int(m.ComponentID))+"/", []byte("{\"status\":\"D\"}"))
 		if err != nil || resp.StatusCode != 200 {
 			logger.Errorf("Could not set monitor down: (resp code %d) %v", resp.StatusCode, err)
+		}
+
+		header := make(map[string]string)
+		header["From"] = "notification@" + Config.SystemName
+		header["To"] = Config.NotifEmail
+		header["Subject"] = "Monitor " + m.Name + " is DOWN"
+		header["MIME-Version"] = "1.0"
+		header["Content-Type"] = "text/plain; charset=\"utf-8\""
+		header["Content-Transfer-Encoding"] = "base64"
+
+		body := time.Now().Format("Mon Jan 2 15:04:05 -0700 MST 2006") + "\r\n" + m.LastFailReason
+
+		message := ""
+		for k, v := range header {
+			message += fmt.Sprintf("%s: %s\r\n", k, v)
+		}
+		message += "\r\n" + base64.StdEncoding.EncodeToString([]byte(body))
+		auth := smtp.PlainAuth("", "", "", "localhost")
+		err = smtp.SendMail(
+			"localhost:smtp",
+			auth,
+			"notification@"+Config.SystemName,
+			strings.Split(Config.NotifEmail, ","),
+			[]byte(message),
+		)
+		if err != nil {
+			logger.Errorf("Could not send email notification: %v", err)
 		}
 
 		m.Status = "D"

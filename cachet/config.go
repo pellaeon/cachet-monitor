@@ -28,6 +28,7 @@ type CachetConfig struct {
 	LogPath        string            `json:"log_path"`
 	InsecureAPI    bool              `json:"insecure_api"`
 	CheckInterval  uint              `json:"check_interval"`
+	NotifEmail     string            `json:"notif_emails"`
 }
 
 func init() {
